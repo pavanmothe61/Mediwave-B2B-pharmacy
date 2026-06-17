@@ -5,6 +5,7 @@ import { Search, Plus, PackagePlus, Edit2, Check, X } from 'lucide-react';
 export default function Catalog() {
   const [medicines, setMedicines] = useState([]);
   const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
   const [showAddForm, setShowAddForm] = useState(false);
   
   // Edit State
@@ -102,6 +103,25 @@ export default function Catalog() {
         </div>
       </div>
 
+      {/* Category Filters */}
+      <div style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '1rem', marginBottom: '1.5rem', scrollbarWidth: 'none' }}>
+        {['All', ...new Set(medicines.map(m => m.category || 'General'))].map(cat => (
+          <button 
+            key={cat}
+            onClick={() => setSelectedCategory(cat)}
+            style={{ 
+              padding: '0.5rem 1.25rem', borderRadius: '99px', fontSize: '0.875rem', fontWeight: '500', cursor: 'pointer', whiteSpace: 'nowrap',
+              background: selectedCategory === cat ? 'var(--primary)' : 'rgba(255,255,255,0.05)',
+              color: selectedCategory === cat ? 'white' : 'var(--text-main)',
+              border: selectedCategory === cat ? 'none' : '1px solid var(--surface-border)',
+              transition: 'all 0.2s'
+            }}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
       {showAddForm && role === 'admin' && (
         <div className="glass-panel animate-fade-in" style={{ padding: '2rem', marginBottom: '2rem' }}>
           <h2 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -153,7 +173,7 @@ export default function Catalog() {
       )}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
-        {medicines.map(med => (
+        {medicines.filter(m => selectedCategory === 'All' || m.category === selectedCategory).map(med => (
           <div key={med.id} className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', opacity: med.stock > 0 || role === 'admin' ? 1 : 0.6 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
               <h3 style={{ fontSize: '1.25rem', fontWeight: '600' }}>{med.name}</h3>
@@ -208,7 +228,7 @@ export default function Catalog() {
             )}
           </div>
         ))}
-        {medicines.length === 0 && <p style={{ color: 'var(--text-muted)' }}>No medicines found. Admin needs to add inventory.</p>}
+        {medicines.filter(m => selectedCategory === 'All' || m.category === selectedCategory).length === 0 && <p style={{ color: 'var(--text-muted)' }}>No medicines found in this category.</p>}
       </div>
     </div>
   );
