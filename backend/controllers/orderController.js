@@ -1,6 +1,7 @@
 const Order = require('../models/Order');
 const OrderItem = require('../models/OrderItem');
 const Medicine = require('../models/Medicine');
+const Notification = require('../models/Notification');
 
 exports.createOrder = async (req, res) => {
   try {
@@ -35,7 +36,21 @@ exports.createOrder = async (req, res) => {
       await Medicine.decrement('stock', { by: item.quantity, where: { id: item.medicine_id } });
     }
 
-    res.status(201).json({ message: 'Order created successfully', order });
+    // Generate Automated Confirmation for Pharmacy
+    await Notification.create({
+      user_id: req.user.id,
+      message: `Confirmation: Your order #${order.id} for ${items.length} items has been successfully placed.`,
+      type: 'Confirmation'
+    });
+
+    // Generate Automated Reminder for Admins
+    await Notification.create({
+      user_id: null,
+      message: `New Order Reminder: Order #${order.id} received from ${customer_name}.`,
+      type: 'Reminder'
+    });
+
+    res.status(201).json({ message: 'Order placed successfully', order });
   } catch (error) {
     res.status(500).json({ message: 'Error creating order', error: error.message });
   }
@@ -69,8 +84,15 @@ exports.updateOrderStatus = async (req, res) => {
     order.status = status;
     if (distributor_location) order.distributor_location = distributor_location;
     await order.save();
+
+    // Generate Automated Follow-up for Pharmacy
+    await Notification.create({
+      user_id: order.user_id,
+      message: `Follow-up: The status of your order #${order.id} has been updated to "${status}".`,
+      type: 'Follow-up'
+    });
     
-    res.json({ message: 'Order status updated', order });
+    res.json({ message: 'Order updated successfully', order });
   } catch (error) {
     res.status(500).json({ message: 'Error updating order status', error: error.message });
   }

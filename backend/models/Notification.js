@@ -1,0 +1,28 @@
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
+
+const Notification = sequelize.define('Notification', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
+  user_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true, // If null, it's a broadcast to all admins
+  },
+  message: {
+    type: DataTypes.TEXT,
+    allowNull: false
+  },
+  type: {
+    type: DataTypes.STRING,
+    allowNull: false, // 'Confirmation', 'Follow-up', 'Reminder'
+  },
+  is_read: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  }
+});
+
+module.exports = Notification;
