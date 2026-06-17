@@ -42,7 +42,7 @@ export default function Cart() {
     try {
       const items = cart.map(c => ({ medicine_id: c.id, quantity: c.quantity }));
       const customer_name = localStorage.getItem('name');
-      await axios.post('http://localhost:5000/api/orders', { items, delivery_address: deliveryAddress, customer_name }, {
+      await axios.post(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/orders`, { items, delivery_address: deliveryAddress, customer_name }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       localStorage.removeItem('cart');

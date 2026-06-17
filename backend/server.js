@@ -14,6 +14,7 @@ app.use('/api/medicines', medicineRoutes);
 app.use('/api/orders', orderRoutes);
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+app.get('/', (req, res) => res.send('Pharmacy B2B Backend API is successfully running!'));
 
 const PORT = process.env.PORT || 5000;
 

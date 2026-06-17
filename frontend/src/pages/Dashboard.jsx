@@ -25,8 +25,8 @@ export default function Dashboard() {
     const fetchData = async () => {
       try {
         const [ordersRes, medsRes] = await Promise.all([
-          axios.get('http://localhost:5000/api/orders', { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get('http://localhost:5000/api/medicines', { headers: { Authorization: `Bearer ${token}` } })
+          axios.get(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/orders`, { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/medicines`, { headers: { Authorization: `Bearer ${token}` } })
         ]);
         setOrders(ordersRes.data);
         setMedicines(medsRes.data);
@@ -44,7 +44,7 @@ export default function Dashboard() {
         distributor_location = prompt("Enter Distributor / Warehouse Location:");
         if (!distributor_location) return;
       }
-      await axios.put(`http://localhost:5000/api/orders/${id}/status`, { status, distributor_location }, {
+      await axios.put(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/orders/${id}/status`, { status, distributor_location }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setOrders(orders.map(o => o.id === id ? { ...o, status, distributor_location: distributor_location || o.distributor_location } : o));

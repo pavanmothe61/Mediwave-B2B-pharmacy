@@ -26,7 +26,7 @@ export default function Catalog() {
   useEffect(() => {
     const fetchMedicines = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/medicines?search=${search}`, {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/medicines?search=${search}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setMedicines(res.data);
@@ -40,7 +40,7 @@ export default function Catalog() {
   const handleAddMedicine = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/medicines', 
+      const res = await axios.post(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/medicines`, 
         { name, description, price: parseFloat(price), stock: parseInt(stock), category },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -55,7 +55,7 @@ export default function Catalog() {
 
   const handleSaveEdit = async (id) => {
     try {
-      const res = await axios.put(`http://localhost:5000/api/medicines/${id}`, 
+      const res = await axios.put(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/medicines/${id}`, 
         { price: parseFloat(editPrice), stock: parseInt(editStock) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -111,7 +111,7 @@ export default function Catalog() {
           <form onSubmit={async (e) => {
             e.preventDefault();
             try {
-              const res = await axios.post('http://localhost:5000/api/medicines', 
+              const res = await axios.post(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/medicines`, 
                 { name, description, price: parseFloat(price), stock: parseInt(stock), category },
                 { headers: { Authorization: `Bearer ${token}` } }
               );
