@@ -1,0 +1,191 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #f4f6fb;
+  font-family: 'Inter', sans-serif;
+  color: #1a2340;
+  padding: 36px 20px 60px;
+}
+
+/* ── Page Title ── */
+.page-title {
+  max-width: 980px;
+  margin: 0 auto 32px;
+}
+
+.page-title h1 {
+  font-size: 26px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 10px;
+}
+
+.page-title p {
+  font-size: 13.5px;
+  color: #4b5563;
+  background: #e8edf8;
+  border-left: 4px solid #3b82f6;
+  padding: 10px 14px;
+  border-radius: 0 6px 6px 0;
+  line-height: 1.6;
+}
+
+/* ── Day Block ── */
+.day-block {
+  max-width: 980px;
+  margin: 0 auto 28px;
+  background: #ffffff;
+  border: 1px solid #dde3f0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+/* ── Top Row ── */
+.day-top-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  background: #f8faff;
+  border-bottom: 1px solid #dde3f0;
+  flex-wrap: wrap;
+}
+
+.day-label {
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 20px;
+  background: #1d4ed8;
+  color: #fff;
+  letter-spacing: 0.3px;
+}
+
+.day-label.d2 { background: #7c3aed; }
+.day-label.d3 { background: #059669; }
+.day-label.d4 { background: #d97706; }
+.day-label.d5 { background: #db2777; }
+
+.week-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  background: #f0f2f8;
+  border: 1px solid #d1d9f0;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.date-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* ── Day Summary ── */
+.day-summary {
+  padding: 14px 20px;
+  font-size: 13.5px;
+  color: #4b5563;
+  background: #fafbff;
+  border-bottom: 1px solid #eef0f8;
+  line-height: 1.65;
+}
+
+/* ── Tasks Label ── */
+.tasks-label {
+  padding: 10px 20px 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7280;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #eef0f8;
+}
+
+/* ── Roles Grid ── */
+.roles-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border-bottom: 1px solid #dde3f0;
+}
+
+@media (max-width: 720px) {
+  .roles-grid { grid-template-columns: 1fr; }
+  .role-col { border-right: none !important; border-bottom: 1px solid #eef0f8; }
+}
+
+.role-col {
+  padding: 16px 20px;
+  border-right: 1px solid #eef0f8;
+}
+.role-col:last-child { border-right: none; }
+
+/* ── Role Title ── */
+.role-title {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid;
+}
+
+.fe-text { color: #1d4ed8; border-color: #1d4ed8; }
+.be-text { color: #059669; border-color: #059669; }
+.td-text { color: #d97706; border-color: #d97706; }
+
+/* ── Task List ── */
+.role-col ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.role-col ul li {
+  font-size: 13px;
+  color: #374151;
+  padding-left: 16px;
+  position: relative;
+  line-height: 1.55;
+}
+
+.role-col ul li::before {
+  content: '–';
+  position: absolute;
+  left: 0;
+  font-weight: 700;
+  color: #9ca3af;
+}
+
+/* ── Deliverable ── */
+.deliverable {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 20px;
+  background: #f0fdf4;
+  flex-wrap: wrap;
+}
+
+.del-tag {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #16a34a;
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  padding: 4px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.del-text {
+  font-size: 13px;
+  color: #374151;
+}
