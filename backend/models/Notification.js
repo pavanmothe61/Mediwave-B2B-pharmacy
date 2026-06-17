@@ -8,7 +8,7 @@ const Notification = sequelize.define('Notification', {
     primaryKey: true
   },
   user_id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.UUID,
     allowNull: true, // If null, it's a broadcast to all admins
   },
   message: {
