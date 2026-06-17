@@ -167,18 +167,25 @@ export default function Dashboard() {
                           <History size={16} /> Action History & Timeline
                         </h4>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                          {order.action_history && order.action_history.map((log, idx) => (
-                            <div key={idx} style={{ display: 'flex', gap: '1rem', fontSize: '0.875rem' }}>
-                              <div style={{ color: 'var(--accent)', fontWeight: 'bold', width: '150px' }}>
-                                {new Date(log.timestamp).toLocaleString()}
+                          {(() => {
+                            let history = [];
+                            if (order.action_history) {
+                              try {
+                                history = typeof order.action_history === 'string' ? JSON.parse(order.action_history) : order.action_history;
+                              } catch (e) {}
+                            }
+                            return history && history.length > 0 ? history.map((log, idx) => (
+                              <div key={idx} style={{ display: 'flex', gap: '1rem', fontSize: '0.875rem' }}>
+                                <div style={{ color: 'var(--accent)', fontWeight: 'bold', width: '150px' }}>
+                                  {new Date(log.timestamp).toLocaleString()}
+                                </div>
+                                <div style={{ color: 'var(--text-muted)', width: '120px' }}>By: {log.user}</div>
+                                <div>{log.action}</div>
                               </div>
-                              <div style={{ color: 'var(--text-muted)', width: '120px' }}>By: {log.user}</div>
-                              <div>{log.action}</div>
-                            </div>
-                          ))}
-                          {(!order.action_history || order.action_history.length === 0) && (
-                            <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>No history recorded.</div>
-                          )}
+                            )) : (
+                              <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>No history recorded.</div>
+                            );
+                          })()}
                         </div>
                       </td>
                     </tr>
