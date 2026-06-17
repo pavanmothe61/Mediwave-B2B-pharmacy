@@ -6,6 +6,9 @@ import Dashboard from './pages/Dashboard';
 import Catalog from './pages/Catalog';
 import Cart from './pages/Cart';
 import AdminLogin from './pages/AdminLogin';
+import MRVisit from './pages/MRVisit';
+import Inventory from './pages/Inventory';
+import Chatbot from './components/Chatbot';
 
 function App() {
   return (
@@ -20,8 +23,11 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/catalog" element={<Catalog />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/mr-visit" element={<MRVisit />} />
+          <Route path="/inventory" element={<Inventory />} />
         </Routes>
       </main>
+      <Chatbot />
     </BrowserRouter>
   );
 }

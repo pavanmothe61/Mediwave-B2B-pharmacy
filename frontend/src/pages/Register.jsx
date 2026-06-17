@@ -6,7 +6,7 @@ import { UserPlus } from 'lucide-react';
 export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const role = 'pharmacy';
+  const [role, setRole] = useState('pharmacy');
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -36,7 +36,14 @@ export default function Register() {
             <input type="password" className="input-field" value={password} onChange={(e) => setPassword(e.target.value)} required />
           </div>
           <div className="input-group">
-            <label className="input-label">Pharmacy / Business Name</label>
+            <label className="input-label">Role</label>
+            <select className="input-field" value={role} onChange={(e) => setRole(e.target.value)}>
+              <option value="pharmacy">Pharmacy</option>
+              <option value="mr">Medical Representative (MR)</option>
+            </select>
+          </div>
+          <div className="input-group">
+            <label className="input-label">{role === 'mr' ? 'Your Name' : 'Pharmacy / Business Name'}</label>
             <input type="text" className="input-field" value={name} onChange={(e) => setName(e.target.value)} required />
           </div>
           <button type="submit" className="btn btn-primary" style={{ width: '100%', display: 'flex', gap: '0.5rem' }}>

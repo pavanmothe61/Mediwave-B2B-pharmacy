@@ -5,6 +5,7 @@ const authRoutes = require('./routes/authRoutes');
 const medicineRoutes = require('./routes/medicineRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const mrVisitRoutes = require('./routes/mrVisitRoutes');
 
 const app = express();
 app.use(cors());
@@ -14,6 +15,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/medicines', medicineRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/mr-visits', mrVisitRoutes);
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 app.get('/', (req, res) => res.send('Pharmacy B2B Backend API is successfully running!'));
