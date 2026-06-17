@@ -28,7 +28,17 @@ exports.createOrder = async (req, res) => {
       });
     }
 
-    const order = await Order.create({ user_id, total_amount, delivery_address, customer_name });
+    const order = await Order.create({ 
+      user_id: req.user.id, 
+      total_amount: total_amount, 
+      delivery_address, 
+      customer_name,
+      action_history: [{
+        action: 'Order Placed',
+        user: 'Pharmacy',
+        timestamp: new Date().toISOString()
+      }]
+    });
 
     for (const item of orderItems) {
       await OrderItem.create({ ...item, order_id: order.id });
@@ -76,13 +86,34 @@ exports.getOrders = async (req, res) => {
 exports.updateOrderStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, distributor_location } = req.body;
+    const { status, distributor_location, priority } = req.body;
     
     const order = await Order.findByPk(id);
-    if (!order) return res.status(404).json({ message: 'Order not found' });
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
 
-    order.status = status;
-    if (distributor_location) order.distributor_location = distributor_location;
+    let history = order.action_history || [];
+
+    if (status && status !== order.status) {
+      history.push({ action: `Status updated to ${status}`, user: 'Internal Team', timestamp: new Date().toISOString() });
+      order.status = status;
+    }
+
+    if (priority && priority !== order.priority) {
+      history.push({ action: `Priority updated to ${priority}`, user: 'Internal Team', timestamp: new Date().toISOString() });
+      order.priority = priority;
+    }
+
+    if (distributor_location) {
+      if (distributor_location !== order.distributor_location) {
+        history.push({ action: `Location updated to ${distributor_location}`, user: 'Internal Team', timestamp: new Date().toISOString() });
+      }
+      order.distributor_location = distributor_location;
+    }
+
+    order.action_history = history;
+    order.changed('action_history', true); // Ensure JSON updates are saved
     await order.save();
 
     // Generate Automated Follow-up for Pharmacy

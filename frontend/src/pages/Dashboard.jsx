@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Package, Users, ShoppingCart, Clock, CheckCircle } from 'lucide-react';
+import { Package, Users, ShoppingCart, Clock, CheckCircle, History, AlertCircle } from 'lucide-react';
 
 const StatCard = ({ title, value, icon: Icon, color }) => (
   <div className="glass-panel" style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -20,6 +20,7 @@ export default function Dashboard() {
   
   const [orders, setOrders] = useState([]);
   const [medicines, setMedicines] = useState([]);
+  const [expandedOrderId, setExpandedOrderId] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,23 +38,25 @@ export default function Dashboard() {
     if (token) fetchData();
   }, [token]);
 
-  const updateOrderStatus = async (id, status) => {
+  const updateOrder = async (id, payload) => {
     try {
       let distributor_location = undefined;
-      if (status === 'Shipped') {
+      if (payload.status === 'Shipped') {
         distributor_location = prompt("Enter Distributor / Warehouse Location:");
         if (!distributor_location) return;
+        payload.distributor_location = distributor_location;
       }
-      await axios.put(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/orders/${id}/status`, { status, distributor_location }, {
+      const res = await axios.put(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/orders/${id}/status`, payload, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setOrders(orders.map(o => o.id === id ? { ...o, status, distributor_location: distributor_location || o.distributor_location } : o));
+      // The backend returns the updated order
+      setOrders(orders.map(o => o.id === id ? res.data.order : o));
       
-      if (status === 'Delivered') {
+      if (payload.status === 'Delivered') {
         alert("Order Completed! 📱 Automated WhatsApp Delivery confirmation sent to Pharmacy.");
       }
     } catch (err) {
-      alert('Failed to update status');
+      alert('Failed to update order');
     }
   };
 
@@ -89,22 +92,40 @@ export default function Dashboard() {
                   <th style={{ padding: '1rem 0' }}>Order ID</th>
                   <th style={{ padding: '1rem 0' }}>Date</th>
                   <th style={{ padding: '1rem 0' }}>Ordered By</th>
+                  <th style={{ padding: '1rem 0' }}>Priority</th>
                   <th style={{ padding: '1rem 0' }}>Total Amount</th>
-                  <th style={{ padding: '1rem 0' }}>Delivery To</th>
-                  <th style={{ padding: '1rem 0' }}>Dispatch From</th>
                   <th style={{ padding: '1rem 0' }}>Status</th>
+                  <th style={{ padding: '1rem 0' }}>History</th>
                   <th style={{ padding: '1rem 0' }}>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {orders.map(order => (
-                  <tr key={order.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                    <td style={{ padding: '1rem 0', fontFamily: 'monospace', fontSize: '0.875rem' }}>{order.id.slice(0,8)}...</td>
+                  <React.Fragment key={order.id}>
+                  <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                    <td style={{ padding: '1rem 0', fontFamily: 'monospace', fontSize: '0.875rem' }}>{order.id.slice(0,8)}</td>
                     <td style={{ padding: '1rem 0' }}>{new Date(order.createdAt).toLocaleDateString()}</td>
                     <td style={{ padding: '1rem 0', fontWeight: '500' }}>{order.customer_name || 'N/A'}</td>
+                    <td style={{ padding: '1rem 0' }}>
+                      {role === 'admin' ? (
+                        <select 
+                          value={order.priority || 'Medium'} 
+                          onChange={(e) => updateOrder(order.id, { priority: e.target.value })}
+                          style={{ background: 'var(--surface)', color: 'var(--text-main)', border: '1px solid var(--surface-border)', padding: '0.25rem', borderRadius: '4px', fontSize: '0.75rem' }}
+                        >
+                          <option value="High">High</option>
+                          <option value="Medium">Medium</option>
+                          <option value="Low">Low</option>
+                        </select>
+                      ) : (
+                        <span style={{ 
+                          padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold',
+                          background: order.priority === 'High' ? 'rgba(239, 68, 68, 0.2)' : order.priority === 'Medium' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(16, 185, 129, 0.2)',
+                          color: order.priority === 'High' ? '#EF4444' : order.priority === 'Medium' ? '#F59E0B' : '#10B981'
+                        }}>{order.priority || 'Medium'}</span>
+                      )}
+                    </td>
                     <td style={{ padding: '1rem 0', fontWeight: '500', color: 'var(--accent)' }}>₹{order.total_amount}</td>
-                    <td style={{ padding: '1rem 0' }}>{order.delivery_address || 'N/A'}</td>
-                    <td style={{ padding: '1rem 0' }}>{order.distributor_location || 'Pending'}</td>
                     <td style={{ padding: '1rem 0' }}>
                       <span style={{ 
                         padding: '0.25rem 0.75rem', 
@@ -121,10 +142,15 @@ export default function Dashboard() {
                         {order.status}
                       </span>
                     </td>
+                    <td style={{ padding: '1rem 0' }}>
+                      <button onClick={() => setExpandedOrderId(expandedOrderId === order.id ? null : order.id)} style={{ background: 'transparent', border: '1px solid var(--accent)', color: 'var(--accent)', padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', display: 'flex', gap: '0.25rem', alignItems: 'center', cursor: 'pointer' }}>
+                        <History size={14} /> History
+                      </button>
+                    </td>
                     {role === 'admin' ? (
                       <td style={{ padding: '1rem 0' }}>
-                        {order.status === 'Pending' && <button onClick={() => updateOrderStatus(order.id, 'Shipped')} className="btn btn-primary" style={{ padding: '0.25rem 0.75rem', fontSize: '0.75rem' }}>Ship</button>}
-                        {order.status === 'Shipped' && <button onClick={() => updateOrderStatus(order.id, 'Delivered')} className="btn" style={{ background: 'var(--success)', color: 'white', padding: '0.25rem 0.75rem', fontSize: '0.75rem', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Deliver</button>}
+                        {order.status === 'Pending' && <button onClick={() => updateOrder(order.id, { status: 'Shipped' })} className="btn btn-primary" style={{ padding: '0.25rem 0.75rem', fontSize: '0.75rem' }}>Ship</button>}
+                        {order.status === 'Shipped' && <button onClick={() => updateOrder(order.id, { status: 'Delivered' })} className="btn" style={{ background: 'var(--success)', color: 'white', padding: '0.25rem 0.75rem', fontSize: '0.75rem', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Deliver</button>}
                       </td>
                     ) : (
                       <td style={{ padding: '1rem 0' }}>
@@ -134,6 +160,30 @@ export default function Dashboard() {
                       </td>
                     )}
                   </tr>
+                  {expandedOrderId === order.id && (
+                    <tr style={{ background: 'rgba(0,0,0,0.2)' }}>
+                      <td colSpan="8" style={{ padding: '1.5rem' }}>
+                        <h4 style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                          <History size={16} /> Action History & Timeline
+                        </h4>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                          {order.action_history && order.action_history.map((log, idx) => (
+                            <div key={idx} style={{ display: 'flex', gap: '1rem', fontSize: '0.875rem' }}>
+                              <div style={{ color: 'var(--accent)', fontWeight: 'bold', width: '150px' }}>
+                                {new Date(log.timestamp).toLocaleString()}
+                              </div>
+                              <div style={{ color: 'var(--text-muted)', width: '120px' }}>By: {log.user}</div>
+                              <div>{log.action}</div>
+                            </div>
+                          ))}
+                          {(!order.action_history || order.action_history.length === 0) && (
+                            <div style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>No history recorded.</div>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>

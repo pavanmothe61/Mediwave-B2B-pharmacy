@@ -30,6 +30,14 @@ const Order = sequelize.define('Order', {
   customer_name: {
     type: DataTypes.STRING,
     allowNull: true
+  },
+  priority: {
+    type: DataTypes.STRING,
+    defaultValue: 'Medium'
+  },
+  action_history: {
+    type: DataTypes.JSON,
+    defaultValue: []
   }
 });
 
