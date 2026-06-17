@@ -20,6 +20,7 @@ export default function Dashboard() {
   
   const [orders, setOrders] = useState([]);
   const [medicines, setMedicines] = useState([]);
+  const [userCount, setUserCount] = useState('-');
   const [expandedOrderId, setExpandedOrderId] = useState(null);
 
   useEffect(() => {
@@ -31,12 +32,21 @@ export default function Dashboard() {
         ]);
         setOrders(ordersRes.data);
         setMedicines(medsRes.data);
+
+        if (role === 'admin') {
+          try {
+            const countRes = await axios.get(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/auth/users/count`, { headers: { Authorization: `Bearer ${token}` } });
+            setUserCount(countRes.data.count);
+          } catch (e) {
+            console.error('Failed to fetch user count');
+          }
+        }
       } catch (error) {
         console.error('Failed to fetch dashboard data');
       }
     };
     if (token) fetchData();
-  }, [token]);
+  }, [token, role]);
 
   const updateOrder = async (id, payload) => {
     try {
@@ -76,7 +86,7 @@ export default function Dashboard() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>
         <StatCard title={role === 'admin' ? "Total Orders" : "My Orders"} value={orders.length} icon={ShoppingCart} color="#4F46E5" />
         <StatCard title="Pending Requests" value={pendingOrders} icon={Clock} color="#F59E0B" />
-        {role === 'admin' && <StatCard title="Active Users" value="-" icon={Users} color="#10B981" />}
+        {role === 'admin' && <StatCard title="Active Users" value={userCount} icon={Users} color="#10B981" />}
         <StatCard title="Available Medicines" value={medicines.length} icon={Package} color={role === 'admin' ? "#EF4444" : "#10B981"} />
       </div>
       

@@ -37,3 +37,12 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: 'Error logging in', error: error.message });
   }
 };
+
+exports.getUserCount = async (req, res) => {
+  try {
+    const count = await User.count();
+    res.json({ count });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching user count' });
+  }
+};
