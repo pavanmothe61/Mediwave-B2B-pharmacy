@@ -10,6 +10,9 @@ export default function Catalog() {
   
   // Edit State
   const [editingMedId, setEditingMedId] = useState(null);
+  const [editName, setEditName] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editCategory, setEditCategory] = useState('');
   const [editPrice, setEditPrice] = useState('');
   const [editStock, setEditStock] = useState('');
 
@@ -57,7 +60,7 @@ export default function Catalog() {
   const handleSaveEdit = async (id) => {
     try {
       const res = await axios.put(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/medicines/${id}`, 
-        { price: parseFloat(editPrice), stock: parseInt(editStock) },
+        { name: editName, description: editDescription, category: editCategory, price: parseFloat(editPrice), stock: parseInt(editStock) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setMedicines(medicines.map(m => m.id === id ? res.data.medicine : m));
@@ -178,7 +181,14 @@ export default function Catalog() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
               <h3 style={{ fontSize: '1.25rem', fontWeight: '600' }}>{med.name}</h3>
               {role === 'admin' && editingMedId !== med.id && (
-                <button onClick={() => { setEditingMedId(med.id); setEditPrice(med.price); setEditStock(med.stock); }} style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', padding: '0.25rem', display: 'flex', alignItems: 'center' }}>
+                <button onClick={() => { 
+                  setEditingMedId(med.id); 
+                  setEditName(med.name);
+                  setEditDescription(med.description);
+                  setEditCategory(med.category || '');
+                  setEditPrice(med.price); 
+                  setEditStock(med.stock); 
+                }} style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', padding: '0.25rem', display: 'flex', alignItems: 'center' }}>
                   <Edit2 size={16} />
                 </button>
               )}
@@ -187,6 +197,16 @@ export default function Catalog() {
             
             {editingMedId === med.id ? (
               <div style={{ background: 'var(--surface-border)', padding: '1rem', borderRadius: '8px', marginTop: 'auto' }}>
+                <div style={{ marginBottom: '0.75rem' }}>
+                  <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Name</label>
+                  <input type="text" className="input-field" style={{ padding: '0.5rem', marginTop: '0.25rem', background: 'var(--surface)', marginBottom: '0.5rem' }} value={editName} onChange={(e) => setEditName(e.target.value)} />
+                  
+                  <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Description</label>
+                  <textarea className="input-field" style={{ padding: '0.5rem', marginTop: '0.25rem', background: 'var(--surface)', marginBottom: '0.5rem' }} rows="2" value={editDescription} onChange={(e) => setEditDescription(e.target.value)} />
+
+                  <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Category</label>
+                  <input type="text" className="input-field" style={{ padding: '0.5rem', marginTop: '0.25rem', background: 'var(--surface)', marginBottom: '0.5rem' }} value={editCategory} onChange={(e) => setEditCategory(e.target.value)} />
+                </div>
                 <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem' }}>
                   <div style={{ flex: 1 }}>
                     <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Price (₹)</label>

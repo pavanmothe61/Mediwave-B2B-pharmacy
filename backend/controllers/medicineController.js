@@ -34,15 +34,18 @@ exports.createMedicine = async (req, res) => {
 exports.updateMedicine = async (req, res) => {
   try {
     const { id } = req.params;
-    const { price, stock } = req.body;
+    const { name, description, price, stock, category } = req.body;
     
     const medicine = await Medicine.findByPk(id);
     if (!medicine) {
       return res.status(404).json({ message: 'Medicine not found' });
     }
 
+    if (name) medicine.name = name;
+    if (description) medicine.description = description;
     if (price !== undefined && price !== null) medicine.price = price;
     if (stock !== undefined && stock !== null) medicine.stock = stock;
+    if (category) medicine.category = category;
     
     await medicine.save();
     res.json({ message: 'Medicine updated successfully', medicine });
