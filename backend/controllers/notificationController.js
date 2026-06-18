@@ -47,3 +47,43 @@ exports.markAsRead = async (req, res) => {
     res.status(500).json({ message: 'Error marking notifications as read', error: error.message });
   }
 };
+
+exports.deleteNotification = async (req, res) => {
+  try {
+    const { id } = req.params;
+    let whereClause = { id, user_id: req.user.id };
+    
+    if (req.user.role === 'admin') {
+      whereClause = {
+        id,
+        [Op.or]: [
+          { user_id: req.user.id },
+          { user_id: null }
+        ]
+      };
+    }
+    await Notification.destroy({ where: whereClause });
+    res.json({ message: 'Notification deleted' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting notification', error: error.message });
+  }
+};
+
+exports.clearAll = async (req, res) => {
+  try {
+    let whereClause = { user_id: req.user.id };
+    
+    if (req.user.role === 'admin') {
+      whereClause = {
+        [Op.or]: [
+          { user_id: req.user.id },
+          { user_id: null }
+        ]
+      };
+    }
+    await Notification.destroy({ where: whereClause });
+    res.json({ message: 'All notifications cleared' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error clearing notifications', error: error.message });
+  }
+};

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Pill, LogOut, ShoppingCart, Bell, CheckCircle2 } from 'lucide-react';
+import { Pill, LogOut, ShoppingCart, Bell, CheckCircle2, Trash2, X } from 'lucide-react';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -46,6 +46,28 @@ export default function Navbar() {
     }
   };
 
+  const deleteNotification = async (id) => {
+    try {
+      await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/notifications/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setNotifications(notifications.filter(n => n.id !== id));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const clearAllNotifications = async () => {
+    try {
+      await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/notifications/clear`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setNotifications([]);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const unreadCount = notifications.filter(n => !n.is_read).length;
 
   return (
@@ -80,20 +102,30 @@ export default function Navbar() {
                   <div className="glass-panel" style={{ position: 'absolute', top: '100%', right: '0', width: '320px', zIndex: 50, padding: '1rem', marginTop: '0.5rem', maxHeight: '400px', overflowY: 'auto' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                       <h4 style={{ margin: 0, fontSize: '1rem' }}>Notifications</h4>
-                      {unreadCount > 0 && (
-                        <button onClick={markAsRead} style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                          <CheckCircle2 size={14} /> Mark all read
-                        </button>
-                      )}
+                      <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        {unreadCount > 0 && (
+                          <button onClick={markAsRead} style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                            <CheckCircle2 size={14} /> Mark read
+                          </button>
+                        )}
+                        {notifications.length > 0 && (
+                          <button onClick={clearAllNotifications} style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                            <Trash2 size={14} /> Clear All
+                          </button>
+                        )}
+                      </div>
                     </div>
                     {notifications.length === 0 ? (
                       <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', textAlign: 'center' }}>No new notifications.</p>
                     ) : (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                         {notifications.map(n => (
-                          <div key={n.id} style={{ padding: '0.75rem', background: n.is_read ? 'transparent' : 'var(--surface-border)', borderRadius: '6px', border: '1px solid var(--surface-border)' }}>
+                          <div key={n.id} style={{ position: 'relative', padding: '0.75rem', background: n.is_read ? 'transparent' : 'var(--surface-border)', borderRadius: '6px', border: '1px solid var(--surface-border)' }}>
+                            <button onClick={() => deleteNotification(n.id)} style={{ position: 'absolute', top: '8px', right: '8px', background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '0.2rem' }}>
+                              <X size={14} />
+                            </button>
                             <div style={{ fontSize: '0.75rem', color: 'var(--accent)', fontWeight: 'bold', marginBottom: '0.25rem' }}>{n.type}</div>
-                            <div style={{ fontSize: '0.875rem', color: 'var(--text-main)' }}>{n.message}</div>
+                            <div style={{ fontSize: '0.875rem', color: 'var(--text-main)', paddingRight: '1rem' }}>{n.message}</div>
                             <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.5rem' }}>{new Date(n.createdAt).toLocaleString()}</div>
                           </div>
                         ))}
