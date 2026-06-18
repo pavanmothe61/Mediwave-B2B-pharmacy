@@ -60,7 +60,6 @@ export default function Navbar() {
             <>
               {role === 'pharmacy' && <Link to="/catalog" className="nav-link">Catalog</Link>}
               {role === 'mr' && <Link to="/mr-visit" className="nav-link">Log Visit</Link>}
-              {role === 'admin' && <Link to="/inventory" className="nav-link">Inventory</Link>}
               <Link to="/dashboard" className="nav-link">Dashboard</Link>
               {role === 'pharmacy' && <Link to="/cart" className="nav-link"><ShoppingCart size={20}/></Link>}
               <div style={{ position: 'relative' }}>
