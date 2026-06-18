@@ -6,5 +6,6 @@ const { verifyToken, isAdmin } = require('../middlewares/authMiddleware');
 router.get('/', verifyToken, medicineController.getMedicines);
 router.post('/', verifyToken, isAdmin, medicineController.createMedicine);
 router.put('/:id', verifyToken, isAdmin, medicineController.updateMedicine);
+router.delete('/:id', verifyToken, isAdmin, medicineController.deleteMedicine);
 
 module.exports = router;

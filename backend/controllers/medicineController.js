@@ -53,3 +53,17 @@ exports.updateMedicine = async (req, res) => {
     res.status(500).json({ message: 'Error updating medicine', error: error.message });
   }
 };
+
+exports.deleteMedicine = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const medicine = await Medicine.findByPk(id);
+    if (!medicine) {
+      return res.status(404).json({ message: 'Medicine not found' });
+    }
+    await medicine.destroy();
+    res.json({ message: 'Medicine deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting medicine', error: error.message });
+  }
+};

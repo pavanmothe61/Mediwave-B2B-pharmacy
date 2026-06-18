@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Search, Plus, PackagePlus, Edit2, Check, X } from 'lucide-react';
+import { Search, Plus, PackagePlus, Edit2, Check, X, Trash2 } from 'lucide-react';
 
 export default function Catalog() {
   const [medicines, setMedicines] = useState([]);
@@ -67,6 +67,18 @@ export default function Catalog() {
       setEditingMedId(null);
     } catch (err) {
       alert('Failed to update medicine details');
+    }
+  };
+
+  const handleDeleteMedicine = async (id) => {
+    if (!window.confirm('Are you sure you want to completely delete this medicine from the catalog?')) return;
+    try {
+      await axios.delete(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/medicines/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setMedicines(medicines.filter(m => m.id !== id));
+    } catch (err) {
+      alert('Failed to delete medicine');
     }
   };
 
@@ -179,18 +191,23 @@ export default function Catalog() {
         {medicines.filter(m => selectedCategory === 'All' || m.category === selectedCategory).map(med => (
           <div key={med.id} className="glass-panel" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', opacity: med.stock > 0 || role === 'admin' ? 1 : 0.6 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: '600' }}>{med.name}</h3>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: '600', paddingRight: '1rem' }}>{med.name}</h3>
               {role === 'admin' && editingMedId !== med.id && (
-                <button onClick={() => { 
-                  setEditingMedId(med.id); 
-                  setEditName(med.name);
-                  setEditDescription(med.description);
-                  setEditCategory(med.category || '');
-                  setEditPrice(med.price); 
-                  setEditStock(med.stock); 
-                }} style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', padding: '0.25rem', display: 'flex', alignItems: 'center' }}>
-                  <Edit2 size={16} />
-                </button>
+                <div style={{ display: 'flex', gap: '0.25rem' }}>
+                  <button onClick={() => { 
+                    setEditingMedId(med.id); 
+                    setEditName(med.name);
+                    setEditDescription(med.description);
+                    setEditCategory(med.category || '');
+                    setEditPrice(med.price); 
+                    setEditStock(med.stock); 
+                  }} style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', padding: '0.25rem', display: 'flex', alignItems: 'center' }}>
+                    <Edit2 size={16} />
+                  </button>
+                  <button onClick={() => handleDeleteMedicine(med.id)} style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', padding: '0.25rem', display: 'flex', alignItems: 'center' }}>
+                    <Trash2 size={16} />
+                  </button>
+                </div>
               )}
             </div>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '1rem', flex: 1 }}>{med.description}</p>
