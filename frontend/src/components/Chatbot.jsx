@@ -134,7 +134,7 @@ export default function Chatbot() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type 'Agent' for handover..."
-              style={{ flex: 1, background: 'var(--surface)', border: '1px solid var(--surface-border)', color: 'white', padding: '0.75rem', borderRadius: '8px', fontSize: '0.875rem', outline: 'none' }}
+              style={{ flex: 1, background: 'var(--surface)', border: '1px solid var(--surface-border)', color: 'var(--text-main)', padding: '0.75rem', borderRadius: '8px', fontSize: '0.875rem', outline: 'none' }}
             />
             <button type="submit" style={{ background: 'var(--primary)', color: 'white', border: 'none', padding: '0 1rem', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Send size={18} />
