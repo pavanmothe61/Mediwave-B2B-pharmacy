@@ -7,7 +7,6 @@ import Catalog from './pages/Catalog';
 import Cart from './pages/Cart';
 import AdminLogin from './pages/AdminLogin';
 import MRVisit from './pages/MRVisit';
-import Chatbot from './components/Chatbot';
 
 function App() {
   return (
@@ -25,7 +24,6 @@ function App() {
           <Route path="/mr-visit" element={<MRVisit />} />
         </Routes>
       </main>
-      <Chatbot />
     </BrowserRouter>
   );
 }
