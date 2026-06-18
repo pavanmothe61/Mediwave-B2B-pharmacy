@@ -55,15 +55,6 @@ export default function Navbar() {
           <Pill size={28} color="#0284C7" />
           Pharmacy B2B Ordering Portal
         </Link>
-        <div className="nav-links" style={{ alignItems: 'center' }}>
-          {token ? (
-            <>
-              {role === 'pharmacy' && <Link to="/catalog" className="nav-link">Catalog</Link>}
-              {role === 'mr' && <Link to="/mr-visit" className="nav-link">Log Visit</Link>}
-              <Link to="/dashboard" className="nav-link">Dashboard</Link>
-              {role === 'pharmacy' && <Link to="/cart" className="nav-link"><ShoppingCart size={20}/></Link>}
-              <div style={{ position: 'relative' }}>
-                <button 
                   onClick={() => setShowNotifications(!showNotifications)} 
                   className="nav-link" 
                   style={{ background: 'none', border: 'none', cursor: 'pointer', position: 'relative' }}
