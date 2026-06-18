@@ -63,7 +63,11 @@ export default function Dashboard() {
       setOrders(orders.map(o => o.id === id ? res.data.order : o));
       
       if (payload.status === 'Delivered') {
-        alert("Order Completed! 📱 Automated WhatsApp Delivery confirmation sent to Pharmacy.");
+        const sendWhatsApp = window.confirm("Order Completed! 📱 Would you like to open WhatsApp to send a delivery confirmation message to the Pharmacy?");
+        if (sendWhatsApp) {
+          const msg = `Hello! Your order #${id.slice(0,8)} from Pharmacy B2B Portal has been successfully *Delivered*.\n\nTotal Amount: ₹${res.data.order.total_amount}\n\nThank you for your business!`;
+          window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        }
       }
     } catch (err) {
       alert('Failed to update order');
