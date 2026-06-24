@@ -10,6 +10,21 @@ export default function Navbar() {
 
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+
+  const updateCartCount = () => {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+    setCartCount(count);
+  };
+
+  useEffect(() => {
+    if (role === 'pharmacy') {
+      updateCartCount();
+      window.addEventListener('cartUpdated', updateCartCount);
+      return () => window.removeEventListener('cartUpdated', updateCartCount);
+    }
+  }, [role]);
 
   useEffect(() => {
     if (token) {
@@ -83,7 +98,16 @@ export default function Navbar() {
               {(role === 'pharmacy' || role === 'admin') && <Link to="/catalog" className="nav-link">Catalog</Link>}
               {role === 'mr' && <Link to="/mr-visit" className="nav-link">Log Visit</Link>}
               <Link to="/dashboard" className="nav-link">Dashboard</Link>
-              {role === 'pharmacy' && <Link to="/cart" className="nav-link"><ShoppingCart size={20}/></Link>}
+              {role === 'pharmacy' && (
+                <Link to="/cart" className="nav-link" style={{ position: 'relative' }}>
+                  <ShoppingCart size={20}/>
+                  {cartCount > 0 && (
+                    <span style={{ position: 'absolute', top: '-8px', right: '-8px', background: 'var(--danger)', color: 'white', borderRadius: '50%', width: '18px', height: '18px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                      {cartCount}
+                    </span>
+                  )}
+                </Link>
+              )}
               <div style={{ position: 'relative' }}>
                 <button 
                   onClick={() => setShowNotifications(!showNotifications)} 

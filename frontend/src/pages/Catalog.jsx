@@ -91,6 +91,7 @@ export default function Catalog() {
       cart.push({ ...med, quantity: 1 });
     }
     localStorage.setItem('cart', JSON.stringify(cart));
+    window.dispatchEvent(new Event('cartUpdated'));
     alert(`${med.name} added to cart`);
   };
 
