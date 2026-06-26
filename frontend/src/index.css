@@ -171,3 +171,52 @@ body {
   max-width: 400px;
   padding: 2rem;
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .navbar-content {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .logo {
+    font-size: 1.1rem;
+  }
+  
+  .nav-links {
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    font-size: 0.9rem;
+  }
+
+  .main-content {
+    padding-top: 8rem; /* Taller navbar when stacked */
+  }
+
+  .container {
+    padding: 0 1rem;
+  }
+
+  .btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .nav-links {
+    gap: 0.75rem;
+  }
+  
+  .main-content {
+    padding-top: 9rem;
+  }
+}
