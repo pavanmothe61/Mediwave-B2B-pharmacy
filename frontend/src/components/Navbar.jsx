@@ -99,14 +99,17 @@ export default function Navbar() {
               {role === 'mr' && <Link to="/mr-visit" className="nav-link">Log Visit</Link>}
               <Link to="/dashboard" className="nav-link">Dashboard</Link>
               {role === 'pharmacy' && (
-                <Link to="/cart" className="nav-link" style={{ position: 'relative' }}>
-                  <ShoppingCart size={20}/>
-                  {cartCount > 0 && (
-                    <span style={{ position: 'absolute', top: '-8px', right: '-8px', background: 'var(--danger)', color: 'white', borderRadius: '50%', width: '18px', height: '18px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
-                      {cartCount}
-                    </span>
-                  )}
-                </Link>
+                <>
+                  <Link to="/feedback" className="nav-link">Feedback</Link>
+                  <Link to="/cart" className="nav-link" style={{ position: 'relative' }}>
+                    <ShoppingCart size={20}/>
+                    {cartCount > 0 && (
+                      <span style={{ position: 'absolute', top: '-8px', right: '-8px', background: 'var(--danger)', color: 'white', borderRadius: '50%', width: '18px', height: '18px', fontSize: '0.7rem', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                        {cartCount}
+                      </span>
+                    )}
+                  </Link>
+                </>
               )}
               <div style={{ position: 'relative' }}>
                 <button 

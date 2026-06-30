@@ -22,6 +22,7 @@ export default function Dashboard() {
   const [medicines, setMedicines] = useState([]);
   const [userCount, setUserCount] = useState('-');
   const [expandedOrderId, setExpandedOrderId] = useState(null);
+  const [feedbacks, setFeedbacks] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,10 +36,14 @@ export default function Dashboard() {
 
         if (role === 'admin') {
           try {
-            const countRes = await axios.get(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/auth/users/count`, { headers: { Authorization: `Bearer ${token}` } });
+            const [countRes, feedbackRes] = await Promise.all([
+              axios.get(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/auth/users/count`, { headers: { Authorization: `Bearer ${token}` } }),
+              axios.get(`${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/feedback`, { headers: { Authorization: `Bearer ${token}` } })
+            ]);
             setUserCount(countRes.data.count);
+            setFeedbacks(feedbackRes.data);
           } catch (e) {
-            console.error('Failed to fetch user count');
+            console.error('Failed to fetch admin specific data');
           }
         }
       } catch (error) {
@@ -211,6 +216,30 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+
+      {role === 'admin' && (
+        <div className="glass-panel" style={{ marginTop: '2.5rem', padding: '1.5rem' }}>
+          <h3 style={{ marginBottom: '1.5rem' }}>Customer Feedback</h3>
+          {feedbacks.length === 0 ? (
+            <p style={{ color: 'var(--text-muted)' }}>No feedback received yet.</p>
+          ) : (
+            <div style={{ display: 'grid', gap: '1rem' }}>
+              {feedbacks.map((fb) => (
+                <div key={fb.id} style={{ background: 'var(--surface-border)', padding: '1.25rem', borderRadius: '8px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                    <div style={{ fontWeight: '600' }}>{fb.User?.name || 'Unknown Pharmacy'}</div>
+                    <div style={{ color: '#FBBF24', fontWeight: 'bold' }}>{'★'.repeat(fb.rating)}{'☆'.repeat(5 - fb.rating)}</div>
+                  </div>
+                  <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '0.75rem' }}>
+                    {fb.User?.email} • {new Date(fb.createdAt).toLocaleDateString()}
+                  </div>
+                  <p style={{ fontSize: '0.95rem', lineHeight: '1.5' }}>{fb.message}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
